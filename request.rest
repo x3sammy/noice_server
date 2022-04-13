@@ -1,0 +1,18 @@
+GET http://localhost:8000
+
+####
+POST http://localhost:8000/login
+Content-Type : application/json
+
+{
+    "uid":"505"
+}
+
+####
+
+POST http://localhost:8000/post
+Content-Type: application/json
+
+{
+    "token" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6InNhbW15IiwiaWF0IjoxNjQzNjQ3NTA1LCJleHAiOjE2NDM2NDc1MzV9.sbCbLwgCW8waLcTsw7B3NRLAW0xQ8_4ARePMrjNLJW8"
+}

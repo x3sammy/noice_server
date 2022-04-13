@@ -1,0 +1,10 @@
+-- 100 connections ---
+django : 9k req | 348ms | max : 6242ms 
+node : 105k req | 85ms | max : 339ms 
+apache2 : 271k req | 4ms | max 1393ms
+
+-- 1000 connections ---
+
+django : 50k | 550ms | max : 11115ms
+node : 130k | 816ms | max : 3289ms
+apache2 : 286k | 2ms  | 9264ms
