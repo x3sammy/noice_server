@@ -6,10 +6,15 @@ import { authUser } from "./middleware/authUser.js";
 import uploadPost from "./dbCred/uploadPost.js";
 import followRoute from "./routes/follow_route.js";
 import commentRoute from "./routes/add_comment.js";
+import userReaction from "./routes/updown.js";
+import amqplib from "amqplib";
+import "dotenv/config";
 
 const app = express();
 app.use(cookieParser());
 app.use(bodyParser.json());
+
+console.log(process.env.MYKEY);
 
 app.use(
   cors({
@@ -20,6 +25,7 @@ app.use(
 
 app.use(authUser);
 
+app.use(userReaction);
 app.use(followRoute);
 app.use(commentRoute);
 

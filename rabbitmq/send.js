@@ -1,30 +1,43 @@
 import amqplib from "amqplib";
-import express from "express";
-const app = express();
+import { v4 as uuidv4 } from "uuid";
 
-const sendQ = async (msg) => {
-  try {
-    const exchangeName = "testEx";
-    const connection = await amqplib.connect("amqp://localhost:5672");
-    const channel = await connection.createChannel();
-    await channel.assertExchange(exchangeName, "fanout", { durable: true });
+const data = process.argv.slice(2);
+const msg = data[0];
+const type = data[1];
+const uid = uuidv4();
 
-    channel.publish(exchangeName, "", Buffer.from(msg));
+if (data[0] == undefined && data[1] == undefined) {
+  console.log("[x] Err : invalid parameters");
+  process.exit(1);
+}
 
+if (type != "follow" && type != "unfollow") {
+  console.log("[x]Invalid Type");
+  process.exit(1);
+}
+
+const sendQ = async () => {
+  const connection = await amqplib.connect("amqp://localhost");
+  const channel = await connection.createChannel();
+
+  await channel.assertExchange("rpc_testing", "direct", { durable: true });
+
+  const que = await channel.assertQueue("", { exclusive: true, durable: true });
+
+  channel.publish("rpc_testing", type, Buffer.from(msg), {
+    replyTo: que.queue,
+    correlationId: uid,
+  });
+
+  console.log("[+]Published To :", que.queue);
+  console.log("[-]Waiting fro response");
+  channel.consume(que.queue, (msg) => {
+    console.log("[~] Msg Recv :", msg.content.toString());
+    channel.ack(msg);
     setTimeout(() => {
-      console.log("[x] SENT :", msg);
       connection.close();
-    }, 200);
-    return { success: true };
-  } catch (e) {
-    return { success: false };
-  }
+    }, 500);
+  });
 };
 
-app
-  .get("/msg", (req, resp) => {
-    const { msg } = req.query;
-    const res = sendQ(msg);
-    resp.status(200).json(res);
-  })
-  .listen(8000);
+sendQ();

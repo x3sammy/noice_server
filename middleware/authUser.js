@@ -13,6 +13,12 @@ client.connect(console.log("server connected to redis"));
 
 export const authUser = async (req, resp, next) => {
   const { __ut, us_id, __st } = req.cookies;
+
+  if (__ut == undefined || us_id == undefined) {
+    resp.status(405).end();
+    return;
+  }
+
   const keyTemp = __st + us_id;
   const keyMain = __ut + us_id;
   const getUserViaSt = await client.exists(keyTemp);
