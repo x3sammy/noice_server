@@ -13,7 +13,6 @@ const fwQ = async () => {
 userReaction.post("/:owner/:post_id/reaction/:reaction", (req, resp) => {
   try {
     const { owner, post_id, reaction } = req.params;
-
     if (
       reaction != "upvote" &&
       reaction != "downvote" &&

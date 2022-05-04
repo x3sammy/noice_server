@@ -7,9 +7,13 @@ import uploadPost from "./dbCred/uploadPost.js";
 import followRoute from "./routes/follow_route.js";
 import commentRoute from "./routes/add_comment.js";
 import userReaction from "./routes/updown.js";
+import signupRoute from "./routes/signup.js";
+import sendOtp from "./routes/sendOtp.js";
+
 import amqplib from "amqplib";
 import "dotenv/config";
 
+console.clear();
 const app = express();
 app.use(cookieParser());
 app.use(bodyParser.json());
@@ -24,10 +28,11 @@ app.use(
 );
 
 app.use(authUser);
-
+app.use(signupRoute);
 app.use(userReaction);
 app.use(followRoute);
 app.use(commentRoute);
+app.use(sendOtp);
 
 app.get("*", (req, resp) => {
   if (req.method == "GET") {
