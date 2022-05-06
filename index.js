@@ -18,8 +18,6 @@ const app = express();
 app.use(cookieParser());
 app.use(bodyParser.json());
 
-console.log(process.env.MYKEY);
-
 app.use(
   cors({
     credentials: true,
@@ -43,16 +41,20 @@ app.get("*", (req, resp) => {
 
 app
   .post("/", (req, resp) => {
-    let { title, discussion, has_media } = req.body;
-    const { us_id } = req.cookies;
+    try {
+      let { title, discussion, has_media } = req.body;
+      const { us_id } = req.cookies;
 
-    const data = uploadPost(us_id, title, discussion, has_media)
-      .then((e) => {
-        resp.status(200).json({ success: true });
-      })
-      .catch((e) => {
-        console.log(e);
-        resp.status(200).json({ success: false });
-      });
+      const data = uploadPost(us_id, title, discussion, has_media)
+        .then((e) => {
+          resp.status(200).json({ success: true });
+        })
+        .catch((e) => {
+          console.log(e);
+          resp.status(200).json({ success: false });
+        });
+    } catch (e) {
+      resp.json({ success: false });
+    }
   })
   .listen(8000);
