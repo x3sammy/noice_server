@@ -9,45 +9,53 @@ var getSha = function (input) {
 const uploadPost = async (owner_id, title, discussion, has_media) => {
   try {
     const getData = new Promise((resolve, reject) => {
-      conn.beginTransaction((err) => {
-        if (err) {
-          reject("err 1.1");
-          conn.rollback("err");
-        } else {
-          conn.query(
-            `INSERT INTO 
-              posts
-                (owner_id, post_hash, upvotes, downvotes, comments, hooked, has_media)
-              VALUES
-                (?, ?, 0, 0, 0, 0, ?)
-            `,
-            [
-              owner_id,
-              getSha(title + "_noice_").substring(0, 12),
-              has_media == true ? 1 : 0,
-            ],
-            (error, result) => {
-              if (error) {
-                console.log(error.message);
-                conn.rollback();
-                reject("err 1.2");
+      conn.getConnection((err, conn) => {
+        try {
+          if (err) {
+            reject("[x] Database Connection Failed");
+          } else {
+            conn.beginTransaction((err) => {
+              if (err) {
+                reject("err 1.1");
+                conn.rollback("err");
               } else {
+                const post_hash = getSha(title + "_noice_").substring(0, 12);
                 conn.query(
-                  `INSERT INTO post_full(post_id, title, discussion) VALUES(?, ?, ?)`,
-                  [result.insertId, title, discussion],
-                  (err, result) => {
-                    if (err) {
+                  `INSERT INTO 
+              post
+                (owner_id, post_hash, has_media)
+              VALUES
+                (?, ?, ?)
+            `,
+                  [owner_id, post_hash, has_media == true ? 1 : 0],
+                  (error, result) => {
+                    if (error) {
+                      console.log(error.message);
                       conn.rollback();
-                      reject("err 1.3");
+                      reject("err 1.2");
                     } else {
-                      conn.commit();
-                      resolve(result);
+                      const insertId = result.insertId;
+                      conn.query(
+                        `INSERT INTO post_full(post_id, title, discussion) VALUES(?, ?, ?)`,
+                        [insertId, title, discussion],
+                        (err, result) => {
+                          if (err) {
+                            conn.rollback();
+                            reject("err 1.3");
+                          } else {
+                            conn.commit();
+                            resolve([insertId, post_hash]);
+                          }
+                        }
+                      );
                     }
                   }
                 );
               }
-            }
-          );
+            });
+          }
+        } finally {
+          conn.release();
         }
       });
     });

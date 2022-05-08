@@ -10,55 +10,57 @@ commentRoute.post("/:username/:post_id/:user_id/comment", (req, resp) => {
   try {
     if (checkId(user_id) && checkId(post_id)) {
       const main = new Promise((resolve, reject) => {
-        conn.query(
-          `SELECT EXISTS(SELECT id FROM post WHERE id = ? AND owner_id = (SELECT id FROM profile WHERE username = ?)) AS is_exist`,
-          [post_id, username],
-          (err, result) => {
-            if (err) {
-              console.log(err.message);
-              reject({ success: false });
-            } else {
-              const res = JSON.parse(JSON.stringify(result))[0];
-              if (res.is_exist == 0) {
-                reject({ msg: "not allowed" });
+        conn.getConnection((err, conn) => {
+          conn.query(
+            `SELECT EXISTS(SELECT id FROM post WHERE id = ? AND owner_id = (SELECT id FROM profile WHERE username = ?)) AS is_exist`,
+            [post_id, username],
+            (err, result) => {
+              if (err) {
+                console.log(err.message);
+                reject({ success: false });
               } else {
-                conn.beginTransaction((err) => {
-                  if (err) {
-                    conn.rollback();
-                    reject({ success: false });
-                  } else {
-                    conn.query(
-                      `INSERT INTO post_comments(post_id, user_id, comment)
+                const res = JSON.parse(JSON.stringify(result))[0];
+                if (res.is_exist == 0) {
+                  reject({ msg: "not allowed" });
+                } else {
+                  conn.beginTransaction((err) => {
+                    if (err) {
+                      conn.rollback();
+                      reject({ success: false });
+                    } else {
+                      conn.query(
+                        `INSERT INTO post_comments(post_id, user_id, comment)
                     VALUES(?, ?, ?)`,
-                      [post_id, user_id, data],
-                      (err, result) => {
-                        lastId = result.insertId;
-                        if (err) {
-                          conn.rollback();
-                          reject({ msg: "something went wrong" });
-                        } else {
-                          conn.query(
-                            `UPDATE post SET comments = comments+1 WHERE id = ? AND owner_id = (SELECT id FROM profile WHERE username = ?)`,
-                            [post_id, username],
-                            (err, result) => {
-                              if (err) {
-                                conn.rollback();
-                                reject({ msg: "failed to update" });
-                              } else {
-                                conn.commit();
-                                resolve({ success: true, id: lastId });
+                        [post_id, user_id, data],
+                        (err, result) => {
+                          lastId = result.insertId;
+                          if (err) {
+                            conn.rollback();
+                            reject({ msg: "something went wrong" });
+                          } else {
+                            conn.query(
+                              `UPDATE post SET comments = comments+1 WHERE id = ? AND owner_id = (SELECT id FROM profile WHERE username = ?)`,
+                              [post_id, username],
+                              (err, result) => {
+                                if (err) {
+                                  conn.rollback();
+                                  reject({ msg: "failed to update" });
+                                } else {
+                                  conn.commit();
+                                  resolve({ success: true, id: lastId });
+                                }
                               }
-                            }
-                          );
+                            );
+                          }
                         }
-                      }
-                    );
-                  }
-                });
+                      );
+                    }
+                  });
+                }
               }
             }
-          }
-        );
+          );
+        });
       })
         .then((e) => {
           setTimeout(() => {
