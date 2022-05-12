@@ -12,7 +12,12 @@ client.on("error", (err) => {
 client.connect(console.log("server connected to redis"));
 
 export const authUser = async (req, resp, next) => {
-  if (req.url == "/signup" || req.url == "/login" || req.url == "/sendOtp") {
+  if (
+    req.url == "/signup" ||
+    req.url == "/login" ||
+    req.url == "/sendOtp" ||
+    req.url == "/getSignedUrl"
+  ) {
     next();
   } else {
     const { __ut, us_id, __st } = req.cookies;

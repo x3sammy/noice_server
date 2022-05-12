@@ -6,7 +6,9 @@ var getSha = function (input) {
   return createHash("sha1").update(JSON.stringify(input)).digest("hex");
 };
 
-const uploadPost = async (owner_id, title, discussion, has_media) => {
+const uploadPost = async (owner_id, title, discussion, has_media, url) => {
+  has_media ? "" : (url = null);
+
   try {
     const getData = new Promise((resolve, reject) => {
       conn.getConnection((err, conn) => {
@@ -22,12 +24,11 @@ const uploadPost = async (owner_id, title, discussion, has_media) => {
                 const post_hash = getSha(title + "_noice_").substring(0, 12);
                 conn.query(
                   `INSERT INTO 
-              post
-                (owner_id, post_hash, has_media)
-              VALUES
-                (?, ?, ?)
-            `,
-                  [owner_id, post_hash, has_media == true ? 1 : 0],
+                    post
+                      (owner_id, post_hash, has_media, media_url)
+                    VALUES (?, ?, ?, ?)
+                `,
+                  [owner_id, post_hash, has_media == true ? 1 : 0, url],
                   (error, result) => {
                     if (error) {
                       console.log(error.message);

@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "amqplib": "^0.8.0",
+    "aws-sdk": "^2.1130.0",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.1",
     "cookie-parser": "^1.4.6",
@@ -23,6 +24,8 @@
     "express-validator": "^6.14.0",
     "google-libphonenumber": "^3.2.27",
     "mysql": "^2.18.1",
+    "node-fetch": "^3.2.4",
+    "randomstring": "^1.2.2",
     "redis": "^4.0.6",
     "uuid": "^8.3.2",
     "ws": "^8.2.3"
