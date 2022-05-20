@@ -8,15 +8,6 @@ import conn from "../connect/connect.js";
 const phoneUtils = PhoneNumberUtil.PhoneNumberUtil.getInstance();
 
 try {
-  const client = createClient({
-    url: "redis://127.0.0.1:6379",
-  });
-
-  client.connect();
-  client.on("error", function (err) {
-    console.error("[x] Error connecting to redis");
-  });
-
   const checkExist = (a, b, c) => {
     if (a == "" || b == "" || c == "") {
       return false;
