@@ -17,8 +17,7 @@ GetUrl.post("/getSignedUrl", (req, resp) => {
       "putObject",
       {
         Bucket: "upload-temp-img",
-        Key: img_id + ".jpg",
-        ContentType: "image/jpeg",
+        Key: img_id,
       },
       (err, url) => {
         if (err) {

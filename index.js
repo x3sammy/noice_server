@@ -14,12 +14,13 @@ import "dotenv/config";
 import conn from "./connect/connect.js";
 import escape from "escape-html";
 import fetch from "node-fetch";
+import decrypt from "./lib/decrypt.js";
 
 console.clear();
+
 const app = express();
 app.use(cookieParser());
 app.use(bodyParser.json());
-
 app.use(
   cors({
     credentials: true,
@@ -54,7 +55,10 @@ app
         .replace(/\W+/g, "")
         .replace(/_$/, "");
       discussion = escape(
-        discussion.trim().substring(0, 300).replaceAll(/\n+/g, "\n")
+        discussion
+          .trim()
+          .substring(0, 300)
+          .replace(/\n{3,}/g, "\n\n")
       );
 
       if (has_media) {
@@ -112,3 +116,13 @@ app
     }
   })
   .listen(8000);
+
+process
+  .on("unhandledRejection", (reason, p) => {
+    console.error(reason);
+    process.exit(1);
+  })
+  .on("uncaughtException", (err) => {
+    console.error(err, "Uncaught Exception thrown");
+    process.exit(1);
+  });
