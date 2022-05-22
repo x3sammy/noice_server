@@ -10,6 +10,8 @@ import userReaction from "./routes/updown.js";
 import signupRoute from "./routes/signup.js";
 import sendOtp from "./routes/sendOtp.js";
 import GetUrl from "./routes/upload.js";
+import DisplayEdit from "./routes/profileUpdate/displayEdit.js";
+
 import "dotenv/config";
 import conn from "./connect/connect.js";
 import escape from "escape-html";
@@ -35,6 +37,7 @@ app.use(followRoute);
 app.use(commentRoute);
 app.use(sendOtp);
 app.use(GetUrl);
+app.use(DisplayEdit);
 
 app.get("*", (req, resp) => {
   if (req.method == "GET") {
