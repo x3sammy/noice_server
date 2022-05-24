@@ -27,7 +27,6 @@ DisplayEdit.post("/:username/displayEdit", (req, resp) => {
   const { us_id } = req.cookies;
 
   const data = req.body;
-
   let { bio, link, location } = data;
 
   if (
@@ -79,8 +78,8 @@ DisplayEdit.post("/:username/displayEdit", (req, resp) => {
     if (connectRabbit() == "err") {
       reject();
     } else {
-      try {
-        (async () => {
+      (async () => {
+        try {
           const connection = await connectRabbit();
           const channel = await connection.createChannel();
           await channel.assertQueue("editProfileDisplay", { durable: false });
@@ -93,24 +92,25 @@ DisplayEdit.post("/:username/displayEdit", (req, resp) => {
               correlationId: uid,
             }
           );
-          resolve();
+
           channel.consume(
             recvQ.queue,
             (msg) => {
               if (msg.content) {
                 if (msg.properties.correlationId == uid) {
                   const fd = msg.content.toString();
+                  console.log(fd);
                   if (fd == "1") {
-                    resolve();
+                    resolve(1);
                   } else {
-                    reject();
+                    resolve(0);
                   }
                   setTimeout(() => {
                     (async () => {
                       await channel.close();
                       await connection.close();
                     })();
-                  });
+                  }, 500);
                 }
               }
             },
@@ -118,16 +118,20 @@ DisplayEdit.post("/:username/displayEdit", (req, resp) => {
               noAck: true,
             }
           );
-        })();
-      } catch (e) {
-        reject("error");
-      }
+        } catch (e) {
+          reject("error");
+        }
+      })();
     }
   });
 
   updateProfile
     .then((e) => {
-      resp.status(200).json({ success: "ok" });
+      if (e == 1) {
+        resp.status(200).json({ success: "ok" });
+      } else {
+        resp.status(200).json({ success: false, msg: "failed to update" });
+      }
     })
     .catch((e) => {
       resp.status(200).json({ success: false });

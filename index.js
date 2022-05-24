@@ -11,6 +11,7 @@ import signupRoute from "./routes/signup.js";
 import sendOtp from "./routes/sendOtp.js";
 import GetUrl from "./routes/upload.js";
 import DisplayEdit from "./routes/profileUpdate/displayEdit.js";
+import CoverUpload from "./routes/coverUpload.js";
 
 import "dotenv/config";
 import conn from "./connect/connect.js";
@@ -38,6 +39,7 @@ app.use(commentRoute);
 app.use(sendOtp);
 app.use(GetUrl);
 app.use(DisplayEdit);
+app.use(CoverUpload);
 
 app.get("*", (req, resp) => {
   if (req.method == "GET") {
