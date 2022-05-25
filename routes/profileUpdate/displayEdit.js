@@ -99,7 +99,6 @@ DisplayEdit.post("/:username/displayEdit", (req, resp) => {
               if (msg.content) {
                 if (msg.properties.correlationId == uid) {
                   const fd = msg.content.toString();
-                  console.log(fd);
                   if (fd == "1") {
                     resolve(1);
                   } else {
