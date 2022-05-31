@@ -11,13 +11,12 @@ import signupRoute from "./routes/signup.js";
 import sendOtp from "./routes/sendOtp.js";
 import GetUrl from "./routes/upload.js";
 import DisplayEdit from "./routes/profileUpdate/displayEdit.js";
-import CoverUpload from "./routes/coverUpload.js";
+import ProfileImgs from "./routes/profileImgsUpload.js";
 
 import "dotenv/config";
 import conn from "./connect/connect.js";
 import escape from "escape-html";
 import fetch from "node-fetch";
-import decrypt from "./lib/decrypt.js";
 
 console.clear();
 
@@ -39,7 +38,7 @@ app.use(commentRoute);
 app.use(sendOtp);
 app.use(GetUrl);
 app.use(DisplayEdit);
-app.use(CoverUpload);
+app.use(ProfileImgs);
 
 app.get("*", (req, resp) => {
   if (req.method == "GET") {
