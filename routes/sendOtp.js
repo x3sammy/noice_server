@@ -5,6 +5,12 @@ import { createClient } from "redis";
 import countryCode from "../codes/countryCode.js";
 import conn from "../connect/connect.js";
 
+const client = createClient({
+  url: "redis://localhost",
+});
+
+client.connect();
+
 const phoneUtils = PhoneNumberUtil.PhoneNumberUtil.getInstance();
 
 try {
@@ -56,7 +62,7 @@ try {
         (async () => {
           const checkUsernamePhone = new Promise((resolve, reject) => {
             conn.query(
-              "SELECT EXISTS(SELECT id FROM profile WHERE username=? OR phone=?) AS exist LIMIT 1",
+              "SELECT EXISTS(SELECT id FROM profile WHERE username=? OR phone=? LIMIT 1) AS exist ",
               [username, rawPhone],
               (err, result) => {
                 if (err) {

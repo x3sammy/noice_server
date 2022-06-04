@@ -1,4 +1,4 @@
-import express, { Router } from "express";
+import express from "express";
 import Randomstring from "randomstring";
 import AWS from "aws-sdk";
 const GetUrl = express.Router();
@@ -24,7 +24,6 @@ GetUrl.post("/getSignedUrl", (req, resp) => {
           resp.json({ success: false });
         } else {
           resp.json({ success: true, url: url, id: img_id });
-          return;
         }
       }
     );

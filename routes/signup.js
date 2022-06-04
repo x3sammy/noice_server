@@ -71,9 +71,11 @@ signupRoute.post("/signup", (req, resp) => {
     .then((e) => {
       const { data, userData } = e;
 
-      const username = userData.username;
-      const name = userData.name;
-      const password = userData.password;
+      let username = userData.username
+        .replace(/(?!\d)(?!\.)\W+/g, "")
+        .replace(/\.{2,}/g, ".");
+      let name = userData.name;
+      let password = userData.password;
 
       const rawPhone = data.rawPhone;
       const country = data.country;
@@ -89,7 +91,7 @@ signupRoute.post("/signup", (req, resp) => {
       // return false;
 
       if (checkName(name, password) == false) {
-        resp.status(200).json({ success: false });
+        resp.status(200).json({ success: false, msg: "invalid name" });
         return false;
       }
 

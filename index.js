@@ -22,7 +22,23 @@ console.clear();
 
 const app = express();
 app.use(cookieParser());
-app.use(bodyParser.json());
+
+function addRawBody(req, res, buf, encoding) {
+  req.rawBody = buf.toString();
+}
+app.use((req, res, next) => {
+  bodyParser.json({
+    verify: addRawBody,
+  })(req, res, (err) => {
+    if (err) {
+      console.log(err.message);
+      res.sendStatus(400);
+      return;
+    }
+    next();
+  });
+});
+
 app.use(
   cors({
     credentials: true,
@@ -123,10 +139,10 @@ app
 
 process
   .on("unhandledRejection", (reason, p) => {
-    console.error(reason);
+    console.error(reason.message);
     process.exit(1);
   })
   .on("uncaughtException", (err) => {
-    console.error(err, "Uncaught Exception thrown");
+    console.error(err.message, "Uncaught Exception thrown");
     process.exit(1);
   });

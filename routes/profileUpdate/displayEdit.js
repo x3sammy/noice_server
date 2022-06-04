@@ -49,7 +49,7 @@ DisplayEdit.post("/:username/displayEdit", (req, resp) => {
 
   const final_link =
     link == ""
-      ? ""
+      ? null
       : {
           display_url: link.replace(/(https|http):\/\/(www\.)?/, ""),
           main_url: link,
